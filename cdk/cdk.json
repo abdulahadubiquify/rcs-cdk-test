@@ -1,0 +1,28 @@
+{
+  "app": "python3 app.py",
+  "watch": {
+    "include": ["**"],
+    "exclude": ["README.md", "cdk*.json", "requirements*.txt", "**/__pycache__", "**/*.pyc"]
+  },
+  "context": {
+    "batchSim": {
+      "vpcId": "vpc-0a54ea5718d9223b0",
+      "subnetIds": [
+        "subnet-06ab46e3924ac48b6",
+        "subnet-03c60d4b11bc6bb50",
+        "subnet-075f469282315f7e1"
+      ],
+      "availabilityZones": ["eu-north-1a", "eu-north-1b", "eu-north-1c"],
+      "instanceTypes": ["g4dn.xlarge"],
+      "maxvCpus": 4,
+      "jobVcpus": 4,
+      "jobMemoryMiB": 12000,
+      "rootVolumeGiB": 100,
+      "jobTimeoutMinutes": 60
+    },
+    "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
+    "@aws-cdk/core:checkSecretUsage": true,
+    "@aws-cdk/core:target-partitions": ["aws"],
+    "@aws-cdk/aws-iam:minimizePolicies": true
+  }
+}

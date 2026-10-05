@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Fake aws CLI for tests/test_preflight.py. Scenario "screenshot" replays the responses seen on
+# 2026-10-05 (user ahad, read permissions missing); scenario "b" = permissions readable, quota 16.
+# Every call except --version must carry --profile rcs, or it fails loudly.
+args="$*"; S=${FAKE_SCENARIO:-screenshot}
+deny() { echo "An error occurred (AccessDeniedException) when calling the $1 operation: User: arn:aws:iam::890742591300:user/ahad is not authorized to perform: $2 on resource: * because no identity-based policy allows the $2 action" >&2; exit 254; }
+[ "$args" = "--version" ] && { echo "aws-cli/2.35.11 Python/3.13 fake"; exit 0; }
+[[ "$args" == "--profile rcs"* ]] || { echo "PROFILE NOT PASSED: $args" >&2; exit 99; }
+case "$args" in
+  *"sts get-caller-identity"*) printf '890742591300\tarn:aws:iam::890742591300:user/ahad\n';;
+  *"iam simulate-principal-policy"*)
+     [ "$S" = screenshot ] && deny SimulatePrincipalPolicy iam:SimulatePrincipalPolicy
+     for a in $(sed -n 's/.*--action-names \(.*\) --query.*/\1/p' <<<"$args"); do
+       case "$a" in iam:*|ecr:Create*|ecr:Set*|s3:Create*|s3:PutBucket*|ssm:*|cloudformation:CreateChangeSet|cloudformation:ExecuteChangeSet) d=implicitDeny;; *) d=allowed;; esac
+       printf '%s\t%s\n' "$a" "$d"; done;;
+  *"ec2 describe-instances"*) echo "g4dn.4xlarge";;
+  *"ec2 describe-instance-types"*) echo 16;;
+  *"service-quotas get-service-quota"*) [ "$S" = screenshot ] && deny GetServiceQuota servicequotas:GetServiceQuota; echo "16.0";;
+  *"describe-instance-type-offerings"*) printf 'eu-north-1a\teu-north-1b\teu-north-1c\n';;
+  *"ec2 describe-subnets"*) printf 'subnet-03c60d4b11bc6bb50\tvpc-0a54ea5718d9223b0\teu-north-1b\tTrue\nsubnet-06ab46e3924ac48b6\tvpc-0a54ea5718d9223b0\teu-north-1a\tTrue\nsubnet-075f469282315f7e1\tvpc-0a54ea5718d9223b0\teu-north-1c\tTrue\n';;
+  *"cloudformation describe-stacks"*) echo "An error occurred (ValidationError) when calling the DescribeStacks operation: Stack with id ${args##*--stack-name } does not exist" >&2; exit 254;;
+  *"s3api head-bucket"*) echo "An error occurred (404) when calling the HeadBucket operation: Not Found" >&2; exit 254;;
+  *"logs describe-log-groups"*) deny DescribeLogGroups logs:DescribeLogGroups;;
+  *"batch describe-job-queues"*) deny DescribeJobQueues batch:DescribeJobQueues;;
+  *"events describe-rule"*) echo "An error occurred (ResourceNotFoundException) when calling the DescribeRule operation: Rule rcs-batch-sim-trigger does not exist on EventBus default." >&2; exit 254;;
+  *"logs describe-resource-policies"*) deny DescribeResourcePolicies logs:DescribeResourcePolicies;;
+  *) echo "UNHANDLED: $args" >&2; exit 98;;
+esac

@@ -1,0 +1,2 @@
+# Offline tests (tests/). Install into the CDK venv: pip install -r cdk/requirements.txt -r requirements-dev.txt
+pytest==8.4.2

@@ -1,0 +1,22 @@
+# Staged Docker build context: a copy of rcs-workflow-processor's code plus the model
+# weights (prepare_build.sh recreates it). Never commit.
+build/
+
+# Model weights and client imagery / outputs (proprietary; weights also exceed GitHub's 100 MB limit)
+*.pth
+*.JPG
+*.jpg
+*.jpeg
+*.png
+local_cpu_check/
+results/
+
+# CDK / Python / Node
+cdk/cdk.out/
+cdk/cdk.context.json
+.venv/
+**/.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+node_modules/

@@ -1,0 +1,18 @@
+# Pinned to the versions installed on the current GPU server (pip list, 2026-10-05).
+# torch/torchvision are already in the base image; pinning stops rfdetr from upgrading them.
+--extra-index-url https://download.pytorch.org/whl/cu124
+torch==2.6.0
+torchvision==0.21.0
+rfdetr==1.9.1
+supervision==0.29.1
+# supervision requires opencv-python (not -headless); pinning only the headless build made pip
+# add an unpinned opencv-python 5.x next to it, two packages writing one cv2. One OpenCV only.
+opencv-python==4.10.0.84
+numpy==2.2.1
+ExifRead==3.5.1
+pillow==12.3.0
+matplotlib==3.10.0
+boto3==1.35.60
+# Unpinned transitive dependency of rfdetr; pinned to what pip resolved on 2026-10-05 so a
+# rebuild produces the same image.
+transformers==5.18.0

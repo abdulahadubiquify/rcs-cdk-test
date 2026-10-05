@@ -1,0 +1,76 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "CdkDeployAndDestroyThroughBootstrapRoles",
+      "Effect": "Allow",
+      "Action": "sts:AssumeRole",
+      "Resource": "arn:aws:iam::890742591300:role/cdk-rcsbsim-*"
+    },
+    {
+      "Sid": "ReadStacks",
+      "Effect": "Allow",
+      "Action": ["cloudformation:DescribeStacks", "cloudformation:DescribeStackEvents"],
+      "Resource": [
+        "arn:aws:cloudformation:eu-north-1:890742591300:stack/rcs-batch-sim/*",
+        "arn:aws:cloudformation:eu-north-1:890742591300:stack/CDKToolkit-rcs-batch-sim/*"
+      ]
+    },
+    {
+      "Sid": "TestBucketList",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::rcs-batch-sim-890742591300"
+    },
+    {
+      "Sid": "TestBucketReadWrite",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject"],
+      "Resource": "arn:aws:s3:::rcs-batch-sim-890742591300/*"
+    },
+    {
+      "Sid": "TailTheTwoLogGroups",
+      "Effect": "Allow",
+      "Action": ["logs:FilterLogEvents", "logs:GetLogEvents", "logs:DescribeLogStreams", "logs:StartLiveTail"],
+      "Resource": [
+        "arn:aws:logs:eu-north-1:890742591300:log-group:/aws/batch/rcs-batch-sim",
+        "arn:aws:logs:eu-north-1:890742591300:log-group:/aws/batch/rcs-batch-sim:*",
+        "arn:aws:logs:eu-north-1:890742591300:log-group:/aws/events/rcs-batch-sim",
+        "arn:aws:logs:eu-north-1:890742591300:log-group:/aws/events/rcs-batch-sim:*"
+      ]
+    },
+    {
+      "Sid": "ReadOnlyChecksWithoutResourceScope",
+      "Effect": "Allow",
+      "Action": [
+        "batch:DescribeComputeEnvironments",
+        "batch:DescribeJobQueues",
+        "batch:ListJobs",
+        "batch:DescribeJobs",
+        "logs:DescribeLogGroups",
+        "logs:DescribeResourcePolicies",
+        "servicequotas:GetServiceQuota",
+        "ec2:DescribeInstances",
+        "ec2:DescribeInstanceTypes",
+        "ec2:DescribeInstanceTypeOfferings",
+        "ec2:DescribeSubnets"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ReadOnlyRuleChecks",
+      "Effect": "Allow",
+      "Action": "events:DescribeRule",
+      "Resource": [
+        "arn:aws:events:eu-north-1:890742591300:rule/rcs-batch-sim-trigger",
+        "arn:aws:events:eu-north-1:890742591300:rule/rcs-batch-sim-job-state"
+      ]
+    },
+    {
+      "Sid": "SimulateOwnPermissions",
+      "Effect": "Allow",
+      "Action": "iam:SimulatePrincipalPolicy",
+      "Resource": "arn:aws:iam::890742591300:user/ahad"
+    }
+  ]
+}

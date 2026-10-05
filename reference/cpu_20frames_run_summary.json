@@ -1,0 +1,15 @@
+{
+  "status": "succeeded",
+  "gpu": null,
+  "timings": {
+    "pipeline_s": 138.5
+  },
+  "peak_rss_mb": 2653.2,
+  "gpu_peak_allocated_mb": null,
+  "bays": 2,
+  "spots": 19,
+  "frames_with_telemetry": 20,
+  "detections_binned": 933,
+  "calibration_source": "features-roof",
+  "warning": null
+}
